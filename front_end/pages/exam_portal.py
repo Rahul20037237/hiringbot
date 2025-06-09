@@ -126,12 +126,9 @@ def main():
                     st.session_state.candidate_name = candidate_name.strip()
                     st.session_state.name_entered = True
                     # Add welcome message to chat
-                    # Note: The bot's `process_message` will also likely generate a greeting.
-                    # You might want to adjust this initial message or the bot's first response
-                    # to avoid redundancy.
                     st.session_state.messages.append({
                         "role": "assistant",
-                        "content": f"Hello {candidate_name.strip()}! Welcome to the AI Hiring Interview. I'm excited to learn more about you and your technical background. Let's begin!",
+                        "content": f"Hello {candidate_name}! Welcome to the AI Hiring Interview. I'm excited to learn more about you and your technical background. Let's begin!",
                         "stage": "greeting",
                         "timestamp": datetime.now().isoformat()
                     })
@@ -174,7 +171,7 @@ def main():
         with col_btn2:
             # Export interview data
             chat_text = f"Interview Chat - {st.session_state.candidate_name}\n"
-            chat_text += f"Session ID: {st.session_state.conversation_id}\n"
+            chat_text += f"Session ID: {st.session_state.cbonversation_id}\n"
             chat_text += f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
             chat_text += "=" * 50 + "\n\n"
             chat_text += "\n".join([
@@ -234,7 +231,7 @@ def main():
     with col1:
         st.subheader("Chat Interface")
 
-        chat_container = st.container(height=500, border=True) # Added height and border for better UI
+        chat_container = st.container()
         with chat_container:
             for message in st.session_state.messages:
                 if message["role"] == "user":
@@ -260,7 +257,6 @@ def main():
                 )
                 col_send, col_clear = st.columns([1, 1])
 
-
                 with col_send:
                     send_button = st.form_submit_button("Send 📤", type="primary")
 
@@ -277,13 +273,13 @@ def main():
                 })
 
                 bot = get_bot()
+                # st.write("Debug - Bot initialized:", bot is not None)
+                # st.write("Debug - Bot type:", type(bot).__name__)
                 try:
-                    # Pass the candidate's name to the bot's process_message method
-                    response = bot.process_message(
-                        user_input,
-                        st.session_state.conversation_id,
-                        st.session_state.candidate_name # <--- This is the key change
-                    )
+                    response = bot.process_message(user_input, st.session_state.conversation_id)
+
+                    # Debug: Show the response structure
+                    st.write("Debug - Response received:", response)
 
                     # Check if response is valid
                     if not response:
@@ -349,7 +345,7 @@ def main():
         if st.session_state.current_stage == "hiring":
             st.warning("""
             **Technical Round:**
-            You're now in the technical interview phase.
+            You're now in the technical interview phase. 
             Focus on demonstrating your coding knowledge and experience.
             """)
 
