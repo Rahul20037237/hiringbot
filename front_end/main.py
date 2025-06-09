@@ -6,7 +6,7 @@ import asyncio
 st.set_page_config(page_title="Hiring Agent", layout="centered")
 
 # Custom CSS for aesthetics
-with open(r"D:\WORKSPACE\pg_agi\front_end\css\main.css") as f:
+with open(r"front_end\css\main.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
