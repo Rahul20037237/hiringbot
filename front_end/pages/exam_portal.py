@@ -1,6 +1,9 @@
 import streamlit as st
 import uuid
 from datetime import datetime
+# import sys
+# import os
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from back_end.bot import LangGraphHiringBot
 
 
@@ -270,8 +273,26 @@ def main():
                 })
 
                 bot = get_bot()
+                st.write("Debug - Bot initialized:", bot is not None)
+                st.write("Debug - Bot type:", type(bot).__name__)
                 try:
                     response = bot.process_message(user_input, st.session_state.conversation_id)
+
+                    # Debug: Show the response structure
+                    st.write("Debug - Response received:", response)
+
+                    # Check if response is valid
+                    if not response:
+                        raise ValueError("No response received from bot")
+
+                    if not isinstance(response, dict):
+                        raise ValueError(f"Invalid response format: {type(response)}")
+
+                    if "response" not in response:
+                        raise ValueError(f"Missing 'response' key in bot response: {response}")
+
+                    if "stage" not in response:
+                        raise ValueError(f"Missing 'stage' key in bot response: {response}")
 
                     st.session_state.messages.append({
                         "role": "assistant",
@@ -286,10 +307,16 @@ def main():
                         st.session_state.interview_complete = True
 
                 except Exception as e:
+                    # Show detailed error information
                     st.error(f"Error processing message: {str(e)}")
+                    st.error(f"Error type: {type(e).__name__}")
+                    st.error(f"User input: {user_input}")
+                    st.error(f"Current stage: {st.session_state.current_stage}")
+
+                    # Also show in chat
                     st.session_state.messages.append({
                         "role": "assistant",
-                        "content": "Sorry, I encountered an error. Please try again.",
+                        "content": f"Error: {str(e)}. Please try again or contact support.",
                         "stage": "error",
                         "timestamp": datetime.now().isoformat()
                     })
