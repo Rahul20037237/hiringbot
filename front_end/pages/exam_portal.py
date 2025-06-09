@@ -102,6 +102,9 @@ def main():
     if "name_entered" not in st.session_state:
         st.session_state.name_entered = False
 
+    if "show_scorecard" not in st.session_state:
+        st.session_state.show_scorecard = False
+
     # --- Name Entry Screen ---
     if not st.session_state.name_entered:
         st.markdown(
@@ -126,9 +129,63 @@ def main():
                         "stage": "greeting",
                         "timestamp": datetime.now().isoformat()
                     })
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("Please enter your name to continue.")
+
+        return
+
+    # --- Check if we should show scorecard ---
+    if st.session_state.show_scorecard:
+        st.markdown("### 📊 Interview Score Card")
+        st.success("🎉 Interview completed successfully!")
+
+        # Display interview summary
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Interview Summary")
+            st.write(f"**Candidate:** {st.session_state.candidate_name}")
+            st.write(f"**Session ID:** {st.session_state.conversation_id[:8]}...")
+            st.write(f"**Total Messages:** {len(st.session_state.messages)}")
+            st.write(f"**Final Stage:** {st.session_state.current_stage}")
+            st.write(f"**Completed At:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+        with col2:
+            st.subheader("Next Steps")
+            st.info("Your interview responses have been recorded and will be reviewed by our hiring team.")
+            st.success("You will be contacted within 2-3 business days with the results.")
+
+        # Add buttons for actions
+        col_btn1, col_btn2, col_btn3 = st.columns(3)
+
+        with col_btn1:
+            if st.button("🔄 Start New Interview", type="primary"):
+                st.session_state.reset_chat = True
+                st.session_state.show_scorecard = False
+                st.rerun()
+
+        with col_btn2:
+            # Export interview data
+            chat_text = f"Interview Chat - {st.session_state.candidate_name}\n"
+            chat_text += f"Session ID: {st.session_state.conversation_id}\n"
+            chat_text += f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            chat_text += "=" * 50 + "\n\n"
+            chat_text += "\n".join([
+                f"{msg['role'].title()}: {msg['content']}"
+                for msg in st.session_state.messages
+            ])
+            st.download_button(
+                label="📥 Download Report",
+                data=chat_text,
+                file_name=f"interview_report_{st.session_state.candidate_name.replace(' ', '_')}_{st.session_state.conversation_id[:8]}.txt",
+                mime="text/plain"
+            )
+
+        with col_btn3:
+            if st.button("👈 Back to Chat"):
+                st.session_state.show_scorecard = False
+                st.rerun()
 
         return
 
@@ -162,7 +219,8 @@ def main():
 
         if st.button("🔄 Start New Interview", type="secondary"):
             st.session_state.reset_chat = True
-            st.experimental_rerun()
+            st.session_state.show_scorecard = False
+            st.rerun()
 
     # --- Main Chat Interface ---
     col1, col2 = st.columns([3, 1])
@@ -202,7 +260,7 @@ def main():
                 with col_clear:
                     if st.form_submit_button("Clear Chat 🗑️"):
                         st.session_state.reset_chat = True
-                        st.experimental_rerun()
+                        st.rerun()
 
             if send_button and user_input.strip():
                 st.session_state.messages.append({
@@ -236,15 +294,16 @@ def main():
                         "timestamp": datetime.now().isoformat()
                     })
 
-                st.experimental_rerun()
+                st.rerun()
 
         else:
             st.success("🎉 Interview Complete! Thank you for your time.")
-            st.info("You can start a new interview using the sidebar button.")
+            st.info("Click the button below to view your interview summary and next steps.")
 
-            if st.button("➡️ Next: Score Card"):
-                # Switch page to 'score_card' (filename without .py)
-                st.switch_page("score_card")
+            # Fixed button logic - instead of trying to switch pages, show scorecard in same page
+            if st.button("➡️ View Interview Summary", type="primary"):
+                st.session_state.show_scorecard = True
+                st.rerun()
 
     with col2:
         st.subheader("Tips")
