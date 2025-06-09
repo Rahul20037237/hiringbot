@@ -1,0 +1,26 @@
+[project]
+name = "pg-agi"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Rahul A", email = "rahul72372003@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9,<3.9.7 || >3.9.7,<4.0"
+dependencies = [
+    "streamlit >=1.45.1,<2.0.0",
+    "langchain >=0.3.25,<0.4.0",
+    "openai >=1.68.2,<2.0.0",  # Updated to match langchain-openai requirement
+    "python-dotenv >=1.0.0,<2.0.0",
+    "langchain-community >=0.3.24,<0.4.0",
+    "langgraph >=0.4.8,<0.5.0",
+    "fastapi >=0.115.12,<0.116.0",
+    "langchain-groq >=0.3.2,<0.4.0",
+    "langchain-openai >=0.3.21,<0.4.0",  # Add this explicitly
+    "email-validator >=2.2.0,<3.0.0"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
