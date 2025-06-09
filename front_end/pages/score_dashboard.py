@@ -53,7 +53,7 @@ if "name" not in st.session_state:
 if "candidate_name" not in st.session_state:
     st.session_state.candidate_name = st.session_state.name
 if "total_questions" not in st.session_state:
-    st.session_state.total_questions = 5
+    st.session_state.total_questions = 4
 if "correct_answers" not in st.session_state:
     st.session_state.correct_answers = 3
 if "score_data" not in st.session_state:
