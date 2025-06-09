@@ -171,7 +171,7 @@ def main():
         with col_btn2:
             # Export interview data
             chat_text = f"Interview Chat - {st.session_state.candidate_name}\n"
-            chat_text += f"Session ID: {st.session_state.conversation_id}\n"
+            chat_text += f"Session ID: {st.session_state.cbonversation_id}\n"
             chat_text += f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
             chat_text += "=" * 50 + "\n\n"
             chat_text += "\n".join([
@@ -256,6 +256,8 @@ def main():
                     key="user_input"
                 )
                 col_send, col_clear = st.columns([1, 1])
+                if not st.session_state.greeting:
+                    user_input=st.session_state.candidate_name
 
                 with col_send:
                     send_button = st.form_submit_button("Send 📤", type="primary")
@@ -273,8 +275,8 @@ def main():
                 })
 
                 bot = get_bot()
-                st.write("Debug - Bot initialized:", bot is not None)
-                st.write("Debug - Bot type:", type(bot).__name__)
+                # st.write("Debug - Bot initialized:", bot is not None)
+                # st.write("Debug - Bot type:", type(bot).__name__)
                 try:
                     response = bot.process_message(user_input, st.session_state.conversation_id)
 
