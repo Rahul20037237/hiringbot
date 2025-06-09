@@ -1,9 +1,9 @@
 import streamlit as st
 import uuid
 from datetime import datetime
-# import sys
-# import os
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from back_end.bot import LangGraphHiringBot
 
 
@@ -105,9 +105,6 @@ def main():
     if "name_entered" not in st.session_state:
         st.session_state.name_entered = False
 
-    if "show_scorecard" not in st.session_state:
-        st.session_state.show_scorecard = False
-
     # --- Name Entry Screen ---
     if not st.session_state.name_entered:
         st.markdown(
@@ -135,60 +132,6 @@ def main():
                     st.rerun()
                 else:
                     st.error("Please enter your name to continue.")
-
-        return
-
-    # --- Check if we should show scorecard ---
-    if st.session_state.show_scorecard:
-        st.markdown("### 📊 Interview Score Card")
-        st.success("🎉 Interview completed successfully!")
-
-        # Display interview summary
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.subheader("Interview Summary")
-            st.write(f"**Candidate:** {st.session_state.candidate_name}")
-            st.write(f"**Session ID:** {st.session_state.conversation_id[:8]}...")
-            st.write(f"**Total Messages:** {len(st.session_state.messages)}")
-            st.write(f"**Final Stage:** {st.session_state.current_stage}")
-            st.write(f"**Completed At:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
-        with col2:
-            st.subheader("Next Steps")
-            st.info("Your interview responses have been recorded and will be reviewed by our hiring team.")
-            st.success("You will be contacted within 2-3 business days with the results.")
-
-        # Add buttons for actions
-        col_btn1, col_btn2, col_btn3 = st.columns(3)
-
-        with col_btn1:
-            if st.button("🔄 Start New Interview", type="primary"):
-                st.session_state.reset_chat = True
-                st.session_state.show_scorecard = False
-                st.rerun()
-
-        with col_btn2:
-            # Export interview data
-            chat_text = f"Interview Chat - {st.session_state.candidate_name}\n"
-            chat_text += f"Session ID: {st.session_state.cbonversation_id}\n"
-            chat_text += f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-            chat_text += "=" * 50 + "\n\n"
-            chat_text += "\n".join([
-                f"{msg['role'].title()}: {msg['content']}"
-                for msg in st.session_state.messages
-            ])
-            st.download_button(
-                label="📥 Download Report",
-                data=chat_text,
-                file_name=f"interview_report_{st.session_state.candidate_name.replace(' ', '_')}_{st.session_state.conversation_id[:8]}.txt",
-                mime="text/plain"
-            )
-
-        with col_btn3:
-            if st.button("👈 Back to Chat"):
-                st.session_state.show_scorecard = False
-                st.rerun()
 
         return
 
@@ -222,7 +165,6 @@ def main():
 
         if st.button("🔄 Start New Interview", type="secondary"):
             st.session_state.reset_chat = True
-            st.session_state.show_scorecard = False
             st.rerun()
 
     # --- Main Chat Interface ---
@@ -273,26 +215,8 @@ def main():
                 })
 
                 bot = get_bot()
-                # st.write("Debug - Bot initialized:", bot is not None)
-                # st.write("Debug - Bot type:", type(bot).__name__)
                 try:
                     response = bot.process_message(user_input, st.session_state.conversation_id)
-
-                    # Debug: Show the response structure
-                    st.write("Debug - Response received:", response)
-
-                    # Check if response is valid
-                    if not response:
-                        raise ValueError("No response received from bot")
-
-                    if not isinstance(response, dict):
-                        raise ValueError(f"Invalid response format: {type(response)}")
-
-                    if "response" not in response:
-                        raise ValueError(f"Missing 'response' key in bot response: {response}")
-
-                    if "stage" not in response:
-                        raise ValueError(f"Missing 'stage' key in bot response: {response}")
 
                     st.session_state.messages.append({
                         "role": "assistant",
@@ -307,16 +231,10 @@ def main():
                         st.session_state.interview_complete = True
 
                 except Exception as e:
-                    # Show detailed error information
                     st.error(f"Error processing message: {str(e)}")
-                    st.error(f"Error type: {type(e).__name__}")
-                    st.error(f"User input: {user_input}")
-                    st.error(f"Current stage: {st.session_state.current_stage}")
-
-                    # Also show in chat
                     st.session_state.messages.append({
                         "role": "assistant",
-                        "content": f"Error: {str(e)}. Please try again or contact support.",
+                        "content": "Sorry, I encountered an error. Please try again.",
                         "stage": "error",
                         "timestamp": datetime.now().isoformat()
                     })
@@ -325,12 +243,11 @@ def main():
 
         else:
             st.success("🎉 Interview Complete! Thank you for your time.")
-            st.info("Click the button below to view your interview summary and next steps.")
+            st.info("You can start a new interview using the sidebar button.")
 
-            # Fixed button logic - instead of trying to switch pages, show scorecard in same page
-            if st.button("➡️ View Interview Summary", type="primary"):
+            if st.button("➡️ Next: Score Card"):
                 st.session_state.show_scorecard = True
-                st.rerun()
+                st.switch_page("pages/score_card.py")
 
     with col2:
         st.subheader("Tips")
