@@ -5,9 +5,9 @@ from langgraph.graph import Graph, END
 from langchain.schema import HumanMessage, AIMessage
 
 from .templates import Templates
-from smith import LangSmithTracer
+from .smith import LangSmithTracer
 
-from back_end.config import settings
+from .back_end.config import settings
 
 
 def route_next_stage(state):
