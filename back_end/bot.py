@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import Graph, END
 from langchain.schema import HumanMessage, AIMessage
 
-from templates import Templates
+from .templates import Templates
 from smith import LangSmithTracer
 
 from back_end.config import settings
