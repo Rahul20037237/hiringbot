@@ -84,7 +84,7 @@ class Templates:
 
 
     Respond accordingly.
-    Current candidate input: {input}
+    candidate says: {input}
     """
 
 
