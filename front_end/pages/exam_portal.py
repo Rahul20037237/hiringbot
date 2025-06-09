@@ -1,9 +1,6 @@
 import streamlit as st
 import uuid
 from datetime import datetime
-# import sys
-# import os
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from back_end.bot import LangGraphHiringBot
 
 
@@ -129,7 +126,7 @@ def main():
                         "stage": "greeting",
                         "timestamp": datetime.now().isoformat()
                     })
-                    st.rerun()
+                    st.experimental_rerun()
                 else:
                     st.error("Please enter your name to continue.")
 
@@ -165,7 +162,7 @@ def main():
 
         if st.button("🔄 Start New Interview", type="secondary"):
             st.session_state.reset_chat = True
-            st.rerun()
+            st.experimental_rerun()
 
     # --- Main Chat Interface ---
     col1, col2 = st.columns([3, 1])
@@ -205,7 +202,7 @@ def main():
                 with col_clear:
                     if st.form_submit_button("Clear Chat 🗑️"):
                         st.session_state.reset_chat = True
-                        st.rerun()
+                        st.experimental_rerun()
 
             if send_button and user_input.strip():
                 st.session_state.messages.append({
@@ -239,15 +236,15 @@ def main():
                         "timestamp": datetime.now().isoformat()
                     })
 
-                st.rerun()
+                st.experimental_rerun()
 
         else:
             st.success("🎉 Interview Complete! Thank you for your time.")
             st.info("You can start a new interview using the sidebar button.")
 
             if st.button("➡️ Next: Score Card"):
-                st.session_state.show_scorecard = True
-                st.switch_page("pages/score_card.py")
+                # Switch page to 'score_card' (filename without .py)
+                st.switch_page("score_card")
 
     with col2:
         st.subheader("Tips")
